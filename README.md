@@ -2,7 +2,7 @@
 ### a simple javascript step sequencer
 
 TODO: 
-* use web audio instead of `<audio>` elements
+* use web audio
 * tempo controls
 * volume controls
 * pitch controls
