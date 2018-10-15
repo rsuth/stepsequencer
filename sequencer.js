@@ -63,10 +63,16 @@ function activateStep() {
 
 function playSound(sound) {
     if (sound == 'bd') {
+        bd.pause();
+        bd.currentTime = 0;
         bd.play();
     } else if (sound == 'sn') {
+        sn.pause();
+        sn.currentTime = 0;
         sn.play();
     } else if (sound == 'clhat') {
+        clhat.pause();
+        clhat.currentTime = 0;
         clhat.play();
     }
 }
