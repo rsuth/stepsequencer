@@ -3,9 +3,9 @@
 
 TODO: 
 * use web audio
-* tempo controls
+* ~~tempo controls~~
 * volume controls
 * pitch controls
 * attack/release controls
 * effects
-* ability to increase length/
+* ability to increase length of sequence

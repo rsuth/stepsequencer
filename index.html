@@ -66,9 +66,11 @@
                 <td class="step"></td>
             </tr>
         </table>
+        <div id='bpm-display'></div>
     </div>
     <div id="controls-wrapper">
-        <button id="play-btn">play/stop</button>
+        <button id="play-btn">play/stop</button><br>
+        <label for="bpm-slider">bpm:</label><input id="bpm-slider" type="range" min="40" max="200" step="1" value="120"/>
     </div>
     <script src="sequencer.js"></script>
 </body>
