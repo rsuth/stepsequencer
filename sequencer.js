@@ -1,7 +1,12 @@
 var step = 0;
+
+// audio objects:
 var bd = new Audio('samples/bd.wav');
 var sn = new Audio('samples/sn.wav');
 var clhat = new Audio('samples/clhat.wav');
+var hitom = new Audio('samples/hitom.wav');
+
+
 var playing = false;
 var bpm = 120;
 var loop = null;
@@ -10,20 +15,11 @@ var bpmElement = document.getElementById('bpm-display');
 
 function initialize() {
     bpmElement.innerText = bpm + ' bpm';
+
     document.querySelectorAll('.step').forEach(element => {
         element.onclick = activateStep;
-        switch (element.parentNode.id) {
-            case "bd":
-                element.setAttribute("data-sound", "bd");
-                break;
-            case "sn":
-                element.setAttribute("data-sound", "sn");
-                break;
-            case "clhat":
-                element.setAttribute("data-sound", "clhat");
-                break;
-        }
     });
+
     document.getElementById('play-btn').onclick = (ev) => {
         step = 0;
         if (playing) {
@@ -74,11 +70,14 @@ function playSound(sound) {
         clhat.pause();
         clhat.currentTime = 0;
         clhat.play();
+    } else if (sound == 'hitom') {
+        hitom.pause();
+        hitom.currentTime = 0;
+        hitom.play();
     }
 }
 
 function playLoop() {
-
     rows.forEach(row => {
         row.cells[step].classList.remove('playhead');
     })
@@ -91,8 +90,6 @@ function playLoop() {
             playSound(row.cells[step].getAttribute('data-sound'));
         }
     })
-
-    console.log("loop");
 
     loop = window.setTimeout(playLoop, (60000 / bpm) / 4);
 }
