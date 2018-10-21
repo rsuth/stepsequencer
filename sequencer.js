@@ -1,11 +1,69 @@
+function BufferLoader(context, urlList, callback) {
+    this.context = context;
+    this.urlList = urlList;
+    this.onload = callback;
+    this.bufferList = new Array();
+    this.loadCount = 0;
+}
+
+// BufferLoader class taken from: https://www.html5rocks.com/en/tutorials/webaudio/intro/
+BufferLoader.prototype.loadBuffer = function (url, index) {
+    // Load buffer asynchronously
+    var request = new XMLHttpRequest();
+    request.open("GET", url, true);
+    request.responseType = "arraybuffer";
+
+    var loader = this;
+
+    request.onload = function () {
+        // Asynchronously decode the audio file data in request.response
+        loader.context.decodeAudioData(
+            request.response,
+            function (buffer) {
+                if (!buffer) {
+                    alert('error decoding file data: ' + url);
+                    return;
+                }
+                loader.bufferList[index] = buffer;
+                if (++loader.loadCount == loader.urlList.length)
+                    loader.onload(loader.bufferList);
+            },
+            function (error) {
+                console.error('decodeAudioData error', error);
+            }
+        );
+    }
+
+    request.onerror = function () {
+        alert('BufferLoader: XHR error');
+    }
+
+    request.send();
+}
+
+BufferLoader.prototype.load = function () {
+    for (var i = 0; i < this.urlList.length; ++i)
+        this.loadBuffer(this.urlList[i], i);
+}
+
 var step = 0;
+var bufferList = null;
+var context = new AudioContext();
+var compressor = 0;
 
-// audio objects:
-var bd = new Audio('samples/bd.wav');
-var sn = new Audio('samples/sn.wav');
-var clhat = new Audio('samples/clhat.wav');
-var hitom = new Audio('samples/hitom.wav');
+var bufferLoader = new BufferLoader(
+    context,
+    [
+        'samples/bd.wav',
+        'samples/sn.wav',
+        'samples/clhat.wav',
+        'samples/hitom.wav',
+    ],
+    (bl) => {
+        bufferList = bl;
+    });
 
+bufferLoader.load();
 
 var playing = false;
 var bpm = 120;
@@ -14,6 +72,10 @@ var rows = document.querySelectorAll('tr');
 var bpmElement = document.getElementById('bpm-display');
 
 function initialize() {
+
+    compressor = context.createDynamicsCompressor();
+    compressor.connect(context.destination);
+
     bpmElement.innerText = bpm + ' bpm';
 
     document.querySelectorAll('.step').forEach(element => {
@@ -57,23 +119,22 @@ function activateStep() {
     }
 }
 
+function playBuffer(index) {
+    var sound = context.createBufferSource();
+    sound.buffer = bufferList[index];
+    sound.connect(compressor);
+    sound.start(0);
+}
+
 function playSound(sound) {
     if (sound == 'bd') {
-        bd.pause();
-        bd.currentTime = 0;
-        bd.play();
+        playBuffer(0);
     } else if (sound == 'sn') {
-        sn.pause();
-        sn.currentTime = 0;
-        sn.play();
+        playBuffer(1);
     } else if (sound == 'clhat') {
-        clhat.pause();
-        clhat.currentTime = 0;
-        clhat.play();
+        playBuffer(2);
     } else if (sound == 'hitom') {
-        hitom.pause();
-        hitom.currentTime = 0;
-        hitom.play();
+        playBuffer(3);
     }
 }
 
